@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Large binary / data files (use Git LFS or external storage)
+*.npy
+*.xlsx
+
+# OS
+.DS_Store
+Thumbs.db
