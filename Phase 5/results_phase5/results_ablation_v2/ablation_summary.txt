@@ -1,0 +1,15 @@
+Experiment                      AUPRC   vs prev   ROC-AUC   Test pos
+------------------------------------------------------------------------
+A: Phase 4 model               0.6125  baseline    0.9010         20
+B: Sanity check (=A)           0.6125   +0.0000    0.9010         20
+C: Features change only        0.6241   +0.0116    0.9196         20
+D: Full Phase 5                0.6289   +0.0048    0.9106         20
+------------------------------------------------------------------------
+Total improvement A → D: +0.0164
+
+Interpretation guide:
+  All experiments use the same 20 test positives (Phase 5 stratified split).
+  A == B  -> sanity check confirmed: reproducible results
+  A -> C  -> improvement purely from combined features (4480 vs 2048)
+  C -> D  -> additional improvement from hyperparameter tuning
+  A -> D  -> total real Phase 5 improvement over Phase 4 model
