@@ -1,0 +1,49 @@
+{
+  "experiment": "eNTRy descriptors only (10 features)",
+  "features_used": [
+    "has_primary_amine",
+    "rotatable_bonds",
+    "glob_hergenrother",
+    "spherocity",
+    "asphericity",
+    "npr1",
+    "npr2",
+    "radius_of_gyration",
+    "pbf",
+    "passes_eNTRy"
+  ],
+  "n_features": 10,
+  "test_set": {
+    "n_total": 468,
+    "n_positive": 20
+  },
+  "results": {
+    "XGBoost": {
+      "auprc": 0.2456,
+      "ci_lo": 0.0828,
+      "ci_hi": 0.4752,
+      "rocauc": 0.6666,
+      "brier": 0.0399,
+      "p10": 0.4,
+      "p20": 0.25
+    },
+    "RandomForest": {
+      "auprc": 0.2279,
+      "ci_lo": 0.0741,
+      "ci_hi": 0.4408,
+      "rocauc": 0.6456,
+      "brier": 0.0408,
+      "p10": 0.4,
+      "p20": 0.25
+    },
+    "LogisticRegression": {
+      "auprc": 0.16,
+      "ci_lo": 0.0592,
+      "ci_hi": 0.3179,
+      "rocauc": 0.718,
+      "brier": 0.2403,
+      "p10": 0.1,
+      "p20": 0.1
+    }
+  }
+}

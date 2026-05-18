@@ -1,0 +1,126 @@
+{
+  "phase5_features_dim": 4480,
+  "extended_features_dim": 4490,
+  "new_entry_columns": [
+    "has_primary_amine",
+    "rotatable_bonds",
+    "glob_hergenrother",
+    "spherocity",
+    "asphericity",
+    "npr1",
+    "npr2",
+    "radius_of_gyration",
+    "pbf",
+    "passes_eNTRy"
+  ],
+  "test_set": {
+    "n_total": 468,
+    "n_positive": 20
+  },
+  "results_phase5_features": {
+    "XGBoost": {
+      "auprc": 0.6415,
+      "ci_lo": 0.4242,
+      "ci_hi": 0.8281,
+      "rocauc": 0.9198,
+      "brier": 0.0273,
+      "p10": 0.8,
+      "p20": 0.6
+    },
+    "LightGBM": {
+      "auprc": 0.6522,
+      "ci_lo": 0.4126,
+      "ci_hi": 0.8379,
+      "rocauc": 0.9258,
+      "brier": 0.027,
+      "p10": 0.8,
+      "p20": 0.7
+    },
+    "RandomForest": {
+      "auprc": 0.6253,
+      "ci_lo": 0.4029,
+      "ci_hi": 0.8189,
+      "rocauc": 0.9223,
+      "brier": 0.0265,
+      "p10": 0.8,
+      "p20": 0.55
+    },
+    "LogisticRegression": {
+      "auprc": 0.4783,
+      "ci_lo": 0.2466,
+      "ci_hi": 0.711,
+      "rocauc": 0.8124,
+      "brier": 0.0982,
+      "p10": 0.7,
+      "p20": 0.5
+    },
+    "Ensemble": {
+      "auprc": 0.6085,
+      "ci_lo": 0.3722,
+      "ci_hi": 0.8117,
+      "rocauc": 0.8772,
+      "brier": 0.031,
+      "p10": 0.9,
+      "p20": 0.6
+    }
+  },
+  "results_extended_features": {
+    "XGBoost": {
+      "auprc": 0.6204,
+      "ci_lo": 0.4063,
+      "ci_hi": 0.8063,
+      "rocauc": 0.9089,
+      "brier": 0.0292,
+      "p10": 0.8,
+      "p20": 0.6
+    },
+    "LightGBM": {
+      "auprc": 0.6189,
+      "ci_lo": 0.381,
+      "ci_hi": 0.8218,
+      "rocauc": 0.9153,
+      "brier": 0.0268,
+      "p10": 0.7,
+      "p20": 0.65
+    },
+    "RandomForest": {
+      "auprc": 0.6081,
+      "ci_lo": 0.3891,
+      "ci_hi": 0.8167,
+      "rocauc": 0.919,
+      "brier": 0.0263,
+      "p10": 0.8,
+      "p20": 0.55
+    },
+    "LogisticRegression": {
+      "auprc": 0.4786,
+      "ci_lo": 0.2456,
+      "ci_hi": 0.71,
+      "rocauc": 0.8116,
+      "brier": 0.0979,
+      "p10": 0.7,
+      "p20": 0.5
+    },
+    "Ensemble": {
+      "auprc": 0.5938,
+      "ci_lo": 0.3633,
+      "ci_hi": 0.8061,
+      "rocauc": 0.8735,
+      "brier": 0.0314,
+      "p10": 0.8,
+      "p20": 0.6
+    }
+  },
+  "entry_shap_ranks": {
+    "has_primary_amine": 322,
+    "rotatable_bonds": 175,
+    "glob_hergenrother": 97,
+    "spherocity": 86,
+    "asphericity": 82,
+    "npr1": 80,
+    "npr2": 74,
+    "radius_of_gyration": 36,
+    "pbf": 55,
+    "passes_eNTRy": 390
+  }
+}

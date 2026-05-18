@@ -1,0 +1,12 @@
+{
+  "top_n": 50,
+  "test_set_size": 468,
+  "test_set_true_actives": 20,
+  "model_auprc": 0.6415,
+  "top_n_analysis": {
+    "true_actives_in_top_n": 15,
+    "precision_at_n": 0.3,
+    "passing_entry": 2,
+    "priority_candidates": 2
+  }
+}

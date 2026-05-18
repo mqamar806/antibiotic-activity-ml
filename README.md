@@ -8,7 +8,7 @@ A computational drug-discovery pipeline developed at the **Helmholtz Centre for 
 
 Antibiotic resistance is one of the most pressing global health threats. This project builds a machine-learning classifier that takes a compound's SMILES string as input and outputs a binary activity prediction (active / inactive against *E. coli*), enabling rapid *in silico* screening of large chemical libraries.
 
-The pipeline is structured in five phases:
+The pipeline is structured in six phases:
 
 | Phase | Description |
 |-------|-------------|
@@ -17,6 +17,7 @@ The pipeline is structured in five phases:
 | 3 | Scaffold-based dataset splitting |
 | 4 | Model training & evaluation |
 | 5 | Model optimisation — feature expansion, hyperparameter tuning, stacking ensemble |
+| 6 | eNTRy rule integration — Gram-negative permeation descriptors, ablation, candidate filter |
 
 ---
 
@@ -87,6 +88,35 @@ Targets the gap between the Phase 4 baseline (AUPRC = 0.363) and the literature 
 Outputs include PR curves, a calibration plot, SHAP top-30 feature importances, and a full Optuna study per model.
 SHAP analysis confirms that ECFP4 count bits and specific RDKit descriptors drive most predictive signal.
 
+### Phase 6 — eNTRy Rule Integration (`Phase 6/`)
+
+Extends the pipeline with the **eNTRy rules** (Richter et al., *Nature* 2017), which describe the physicochemical properties required for small molecules to accumulate inside Gram-negative bacteria: a non-sterically-encumbered primary amine, low globularity (≤ 0.25), and limited rotatable bonds (≤ 5).
+
+Three experiments are run:
+
+**6A — eNTRy descriptor calculation & model extension**  
+Ten new descriptors are computed for every molecule (2D: `has_primary_amine`, `rotatable_bonds`; 3D: `glob_hergenrother`, `spherocity`, `asphericity`, `NPR1`, `NPR2`, `radius_of_gyration`, `PBF`; derived: `passes_eNTRy`). These are appended to the Phase 5 feature matrix (4,480 → 4,490 dimensions) and all Phase 5 models are retrained.
+
+**6B — eNTRy descriptors only (ablation)**  
+Models trained on the 10 eNTRy features alone, without fingerprints — isolates how much signal the rules carry independently.
+
+**6C — eNTRy filter on top predictions**  
+The best Phase 5 XGBoost model ranks the test set; the top-50 predictions are then filtered by the eNTRy rules and TPSA/logP to flag priority wet-lab candidates.
+
+**Results (held-out scaffold test set, n = 468, 20 positives):**
+
+| Experiment | Feature set | Best AUPRC | ROC-AUC |
+|------------|-------------|-----------|---------|
+| Phase 5 (reference) | 4,480-dim (ECFP + RDKit) | 0.6522 (LightGBM) | 0.926 |
+| Phase 6A — extended | 4,490-dim (+ eNTRy) | 0.6204 (XGBoost) | 0.909 |
+| Phase 6B — eNTRy only | 10 eNTRy descriptors | 0.2456 (XGBoost) | 0.667 |
+
+**Key findings:**
+- Adding eNTRy features did **not** improve AUPRC — fingerprints already encode this structural information (SHAP rank of `passes_eNTRy`: 390th / 4,490).
+- eNTRy rules alone (no fingerprints) achieve AUPRC ≈ 0.25, far below the full fingerprint models — rules are necessary but not sufficient for activity prediction.
+- Globularity (Hergenrother PCA) and RDKit SpherocityIndex are strongly correlated on this dataset.
+- Phase 6C filter: 15 / 50 top-ranked compounds are true actives (precision@50 = 0.30); **2 compounds** pass eNTRy and are flagged as priority candidates.
+
 ---
 
 ## Repository Structure
@@ -124,6 +154,29 @@ SHAP analysis confirms that ECFP4 count bits and specific RDKit descriptors driv
 │   │   │   └── ablation_summary.txt         # Ablation AUPRC table
 │   │   └── results.json                     # All metrics and best hyperparameters
 │   └── Phase_5_Report_v2.docx
+├── Phase 6/
+│   ├── notebooks/
+│   │   ├── phase_6_entry_descriptors.py         # Step 1: compute eNTRy + 3D descriptors
+│   │   ├── phase_6_model.py                     # Step 2: retrain with extended features + SHAP
+│   │   ├── phase_6b_entry_only.py               # Ablation: eNTRy features only
+│   │   ├── phase_6c_entry_filter.py             # Filter top predictions by eNTRy rules
+│   │   ├── run_phase6.sh                        # HPC orchestration script
+│   │   ├── phase6_model.sh                      # HPC job: model training
+│   │   ├── phase6c_entry_filter.sh              # HPC job: eNTRy filter
+│   │   └── submit_phase6b.sh                    # HPC job: ablation
+│   ├── figures/
+│   │   ├── pr_curves_phase6.png                 # PR curves: Phase 5 vs extended
+│   │   ├── pr_curves_entry_only.png             # PR curves: eNTRy-only ablation
+│   │   ├── shap_phase6.png                      # SHAP top-30 with eNTRy features highlighted
+│   │   ├── glob_vs_spherocity.png               # Globularity vs SpherocityIndex scatter
+│   │   ├── entry_filter_top50.png               # Top-50 candidates with eNTRy filter
+│   │   └── cumulative_precision_entry.png       # Cumulative precision curve
+│   ├── results/
+│   │   ├── results_phase6.json                  # Phase 6A metrics + SHAP ranks
+│   │   ├── results_phase6b.json                 # Phase 6B ablation metrics
+│   │   ├── results_phase6c.json                 # Phase 6C top-50 filter analysis
+│   │   └── entry_descriptors.csv                # Computed eNTRy descriptors for all molecules
+│   └── Report Phase 6.docx
 └── README.md
 ```
 
