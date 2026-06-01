@@ -1,0 +1,35 @@
+{
+  "top_n": 50,
+  "reference_antibiotics": [
+    "Ampicillin",
+    "Amoxicillin",
+    "Piperacillin",
+    "Meropenem",
+    "Ciprofloxacin",
+    "Levofloxacin",
+    "Norfloxacin",
+    "Erythromycin",
+    "Azithromycin",
+    "Gentamicin",
+    "Streptomycin",
+    "Vancomycin",
+    "Trimethoprim",
+    "Sulfamethoxazole",
+    "Colistin",
+    "Chloramphenicol",
+    "Rifampicin",
+    "Linezolid",
+    "Halicin"
+  ],
+  "thresholds": {
+    "high": 0.7,
+    "medium": 0.4
+  },
+  "novelty_counts": {
+    "structurally_novel": 43,
+    "related_scaffold": 7,
+    "likely_rediscovery": 0
+  },
+  "novel_true_actives": 11,
+  "true_actives_in_top_n": 15
+}

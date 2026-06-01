@@ -17,7 +17,7 @@ The pipeline is structured in six phases:
 | 3 | Scaffold-based dataset splitting |
 | 4 | Model training & evaluation |
 | 5 | Model optimisation — feature expansion, hyperparameter tuning, stacking ensemble |
-| 6 | eNTRy rule integration — Gram-negative permeation descriptors, ablation, candidate filter |
+| 6 | eNTRy rule integration — Gram-negative permeation descriptors, ablation, candidate filter, structural novelty analysis |
 
 ---
 
@@ -117,6 +117,19 @@ The best Phase 5 XGBoost model ranks the test set; the top-50 predictions are th
 - Globularity (Hergenrother PCA) and RDKit SpherocityIndex are strongly correlated on this dataset.
 - Phase 6C filter: 15 / 50 top-ranked compounds are true actives (precision@50 = 0.30); **2 compounds** pass eNTRy and are flagged as priority candidates.
 
+**6D — Structural novelty analysis (Tanimoto similarity)**  
+Checks whether the top-50 predicted actives are structurally novel relative to a reference panel of 20 known antibiotics covering all major classes (beta-lactams, fluoroquinolones, tetracyclines, macrolides, aminoglycosides, glycopeptides, sulfonamides, polymyxins, and others). Tanimoto similarity on ECFP4 fingerprints is computed for each query compound against all 20 references; max Tanimoto < 0.40 is used as the novelty threshold (standard scaffold-level cut-off in drug discovery).
+
+**Results (top 50 predictions):**
+
+| Category | Count | Threshold |
+|----------|-------|-----------|
+| Structurally novel | 43 / 50 | max Tanimoto < 0.40 |
+| Related scaffold | 7 / 50 | 0.40 – 0.70 |
+| Likely rediscovery | 0 / 50 | > 0.70 |
+
+Structurally novel **true actives** (confirmed hits with no known structural analogue): **11 / 15**
+
 ---
 
 ## Repository Structure
@@ -160,22 +173,28 @@ The best Phase 5 XGBoost model ranks the test set; the top-50 predictions are th
 │   │   ├── phase_6_model.py                     # Step 2: retrain with extended features + SHAP
 │   │   ├── phase_6b_entry_only.py               # Ablation: eNTRy features only
 │   │   ├── phase_6c_entry_filter.py             # Filter top predictions by eNTRy rules
+│   │   ├── phase_6d_novelty.py                  # Tanimoto structural novelty analysis
 │   │   ├── run_phase6.sh                        # HPC orchestration script
 │   │   ├── phase6_model.sh                      # HPC job: model training
 │   │   ├── phase6c_entry_filter.sh              # HPC job: eNTRy filter
-│   │   └── submit_phase6b.sh                    # HPC job: ablation
+│   │   ├── submit_phase6b.sh                    # HPC job: ablation
+│   │   └── submit_phase6d.sh                    # HPC job: novelty analysis
 │   ├── figures/
 │   │   ├── pr_curves_phase6.png                 # PR curves: Phase 5 vs extended
 │   │   ├── pr_curves_entry_only.png             # PR curves: eNTRy-only ablation
 │   │   ├── shap_phase6.png                      # SHAP top-30 with eNTRy features highlighted
 │   │   ├── glob_vs_spherocity.png               # Globularity vs SpherocityIndex scatter
 │   │   ├── entry_filter_top50.png               # Top-50 candidates with eNTRy filter
-│   │   └── cumulative_precision_entry.png       # Cumulative precision curve
+│   │   ├── cumulative_precision_entry.png       # Cumulative precision curve
+│   │   ├── tanimoto_novelty_top50.png           # Novelty distribution (top-50 predictions)
+│   │   └── tanimoto_heatmap_top20.png           # Similarity heatmap vs 20 reference antibiotics
 │   ├── results/
 │   │   ├── results_phase6.json                  # Phase 6A metrics + SHAP ranks
 │   │   ├── results_phase6b.json                 # Phase 6B ablation metrics
 │   │   ├── results_phase6c.json                 # Phase 6C top-50 filter analysis
-│   │   └── entry_descriptors.csv                # Computed eNTRy descriptors for all molecules
+│   │   ├── entry_descriptors.csv                # Computed eNTRy descriptors for all molecules
+│   │   ├── results_phase6d.json                 # Phase 6D novelty analysis summary
+│   │   └── novel_candidates.csv                 # Structurally novel candidate list
 │   └── Report Phase 6.docx
 └── README.md
 ```
